@@ -17,15 +17,8 @@
 
   <link rel="stylesheet" href="styles.css" />
 <style>
-  .video-library{
-    display:grid;
-    grid-template-columns: 1.35fr 1fr;
-    gap: 12px;
-    align-items: start;
-    margin-top: 10px;
-  }
   .playlist-list{
-    max-height: 420px;
+    max-height: 540px;
     overflow: auto;
     border: 1px solid rgba(255,255,255,.14);
     border-radius: 16px;
@@ -43,6 +36,7 @@
     color: inherit;
   }
   .playlist-item:hover{ background: rgba(255,255,255,.06); }
+  .playlist-item[aria-current="true"]{ background: rgba(255,255,255,.08); outline: 1px solid rgba(255,255,255,.14); }
   .playlist-thumb{
     width: 120px;
     flex: 0 0 120px;
@@ -54,10 +48,75 @@
   .playlist-meta{ font-size: 14px; line-height: 1.25; }
   .playlist-title{ font-weight: 600; }
   .playlist-date{ margin-top: 4px; opacity: .75; font-size: 12px; }
+
+  /* Modal viewer */
+  .video-modal{ display:none; }
+  .video-modal[aria-hidden="false"]{ 
+    display:block;
+    position: fixed;
+    inset: 0;
+    z-index: 9999;
+  }
+  .video-modal__scrim{
+    position:absolute; inset:0;
+    background: rgba(0,0,0,.62);
+    backdrop-filter: blur(2px);
+  }
+  .video-modal__panel{
+    position:absolute;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%,-50%);
+    width: min(980px, calc(100% - 24px));
+    background: rgba(10,10,10,.92);
+    border: 1px solid rgba(255,255,255,.16);
+    border-radius: 18px;
+    box-shadow: 0 30px 80px rgba(0,0,0,.55);
+    overflow: hidden;
+  }
+  .video-modal__top{
+    display:flex;
+    align-items:center;
+    justify-content: space-between;
+    padding: 10px 12px;
+    border-bottom: 1px solid rgba(255,255,255,.12);
+  }
+  .video-modal__title{
+    font-weight: 600;
+    font-size: 14px;
+    opacity: .92;
+    padding-right: 10px;
+  }
+  .video-modal__close{
+    appearance:none;
+    border: 0;
+    background: rgba(255,255,255,.08);
+    color: inherit;
+    border-radius: 12px;
+    padding: 8px 10px;
+    cursor: pointer;
+  }
+  .video-modal__close:hover{ background: rgba(255,255,255,.12); }
+  .video-modal__frame{
+    position: relative;
+    width: 100%;
+    aspect-ratio: 16 / 9;
+    background: #000;
+  }
+  .video-modal__frame iframe{
+    position:absolute; inset:0;
+    width:100%; height:100%;
+  }
+  .video-modal__actions{
+    padding: 10px 12px 12px;
+    display:flex;
+    justify-content: flex-end;
+    gap: 10px;
+  }
+
   @media (max-width: 900px){
-    .video-library{ grid-template-columns: 1fr; }
     .playlist-thumb{ width: 96px; flex-basis: 96px; }
-    .playlist-list{ max-height: 320px; }
+    .playlist-list{ max-height: 420px; }
   }
 </style>
 </head>
@@ -141,25 +200,37 @@
         <div class="split" style="margin-top: 16px;">
           <article class="panel">
   <h3>Browse the full library</h3>
-  <p class="muted" style="margin-top: 6px;">Scroll the full list and click any video to play.</p>
+  <p class="muted" style="margin-top: 6px;">Scroll the full list. Click any video to watch in-page (opens a lightweight viewer).</p>
 
-  <div class="video-library" aria-label="Video library">
-    <div class="video-embed video-embed--library" aria-label="Library player">
-      <iframe
-        id="libraryPlayer"
-        src="https://www.youtube.com/embed/videoseries?list=PLnl6JeuBOQB3RZKoacQ_1CGq8ssAVgu7y&playsinline=1"
-        title="OpenTEAM In-Depths (Library Player)"
-        frameborder="0"
-        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-        allowfullscreen></iframe>
-    </div>
-
-    <div id="playlistList" class="playlist-list" aria-label="Playlist list">
-      <div class="muted" style="font-size: 14px;">Loading playlist…</div>
-    </div>
+  <div class="playlist-list" id="playlistList" aria-label="Playlist list">
+    <div class="muted" style="font-size: 14px;">Loading playlist…</div>
   </div>
 
-  <p class="muted" style="margin-top: 10px;">If the list doesn’t load, use <a href="https://youtube.com/playlist?list=PLnl6JeuBOQB3RZKoacQ_1CGq8ssAVgu7y" target="_blank" rel="noopener">Open on YouTube</a>.</p>
+  <div style="display:flex; gap:10px; flex-wrap:wrap; margin-top: 12px;">
+    <a class="btn small" href="https://youtube.com/playlist?list=PLnl6JeuBOQB3RZKoacQ_1CGq8ssAVgu7y" target="_blank" rel="noopener">Open playlist on YouTube ↗</a>
+  </div>
+
+  <!-- Modal viewer -->
+  <div class="video-modal" id="videoModal" aria-hidden="true" role="dialog" aria-label="Video viewer">
+    <div class="video-modal__scrim" data-close="1"></div>
+    <div class="video-modal__panel" role="document">
+      <div class="video-modal__top">
+        <div class="video-modal__title" id="videoModalTitle">Now playing</div>
+        <button class="video-modal__close" type="button" aria-label="Close video" data-close="1">✕</button>
+      </div>
+      <div class="video-modal__frame">
+        <iframe id="videoModalFrame"
+          src=""
+          title="OpenTEAM video"
+          frameborder="0"
+          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+          allowfullscreen></iframe>
+      </div>
+      <div class="video-modal__actions">
+        <a class="btn small" id="videoModalYT" href="#" target="_blank" rel="noopener">Watch on YouTube ↗</a>
+      </div>
+    </div>
+  </div>
 </article>
 
           <article class="panel">
@@ -204,15 +275,42 @@
 <script>
   (function () {
     const playlistId = "PLnl6JeuBOQB3RZKoacQ_1CGq8ssAVgu7y";
-    const feedUrl = "https://www.youtube.com/feeds/videos.xml?playlist_id=" + playlistId;
+    // YouTube’s RSS feed can be blocked by CORS on static sites.
+    // This proxy returns the same XML with permissive CORS headers.
+    const feedUrl = "https://r.jina.ai/http://www.youtube.com/feeds/videos.xml?playlist_id=" + playlistId;
 
     const listEl = document.getElementById("playlistList");
-    const playerEl = document.getElementById("libraryPlayer");
-    if (!listEl || !playerEl) return;
+    const modal = document.getElementById("videoModal");
+    const modalFrame = document.getElementById("videoModalFrame");
+    const modalTitle = document.getElementById("videoModalTitle");
+    const modalYT = document.getElementById("videoModalYT");
+    if (!listEl || !modal || !modalFrame) return;
 
     function safeText(nodeList) {
       return nodeList && nodeList[0] ? (nodeList[0].textContent || "").trim() : "";
     }
+
+    function openModal(videoId, title) {
+      modal.setAttribute("aria-hidden", "false");
+      document.body.style.overflow = "hidden";
+      modalFrame.src = "https://www.youtube.com/embed/" + videoId + "?autoplay=1&playsinline=1";
+      modalTitle.textContent = title || "Now playing";
+      modalYT.href = "https://youtu.be/" + videoId;
+    }
+
+    function closeModal() {
+      modal.setAttribute("aria-hidden", "true");
+      document.body.style.overflow = "";
+      modalFrame.src = "";
+      modalYT.href = "#";
+    }
+
+    modal.addEventListener("click", (e) => {
+      if (e.target && e.target.getAttribute && e.target.getAttribute("data-close") === "1") closeModal();
+    });
+    window.addEventListener("keydown", (e) => {
+      if (e.key === "Escape" && modal.getAttribute("aria-hidden") === "false") closeModal();
+    });
 
     function buildItem(videoId, title, thumbUrl, published) {
       const a = document.createElement("a");
@@ -222,10 +320,10 @@
       a.rel = "noopener";
 
       a.addEventListener("click", function (e) {
-        // Play inline instead of navigating away.
+        // Watch in-page via modal instead of navigating away.
         e.preventDefault();
-        playerEl.src = "https://www.youtube.com/embed/" + videoId + "?playsinline=1";
-        // Highlight active item
+        openModal(videoId, title);
+
         const prev = listEl.querySelector(".playlist-item[aria-current='true']");
         if (prev) prev.removeAttribute("aria-current");
         a.setAttribute("aria-current", "true");
@@ -258,13 +356,16 @@
     fetch(feedUrl)
       .then((r) => r.text())
       .then((xmlText) => {
+        // The proxy prefixes content with markers; extract the XML part if present.
+        const start = xmlText.indexOf("<?xml");
+        const xmlOnly = start >= 0 ? xmlText.slice(start) : xmlText;
+
         const parser = new DOMParser();
-        const xml = parser.parseFromString(xmlText, "text/xml");
+        const xml = parser.parseFromString(xmlOnly, "text/xml");
         const entries = Array.from(xml.getElementsByTagName("entry"));
         if (!entries.length) throw new Error("No playlist entries found.");
 
         listEl.innerHTML = "";
-        let firstVideoId = null;
 
         entries.forEach((entry) => {
           const videoId =
@@ -274,7 +375,6 @@
           const title = safeText(entry.getElementsByTagName("title"));
           const published = safeText(entry.getElementsByTagName("published"));
 
-          // media:thumbnail url
           let thumbUrl = "";
           const thumbs = entry.getElementsByTagName("media:thumbnail");
           if (thumbs && thumbs[0] && thumbs[0].getAttribute) {
@@ -282,17 +382,13 @@
           }
 
           if (!videoId) return;
-          if (!firstVideoId) firstVideoId = videoId;
-
           listEl.appendChild(buildItem(videoId, title, thumbUrl, published));
         });
 
-        // Start with the first item highlighted (keep playlist player until click).
         const firstItem = listEl.querySelector(".playlist-item");
         if (firstItem) firstItem.setAttribute("aria-current", "true");
       })
       .catch(() => {
-        // Fallback: show a direct playlist player (works even if feed is blocked).
         listEl.innerHTML =
           '<div class="muted" style="font-size:14px;">Playlist list couldn\'t load here. Use <a href="https://youtube.com/playlist?list=' +
           playlistId +
