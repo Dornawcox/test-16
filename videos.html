@@ -6,167 +6,111 @@
   <title>OpenTEAM — Videos</title>
   <meta name="description" content="OpenTEAM video library: In-Depths series, orientation, primers, glossary updates, and community stories." />
 
+  <meta property="og:title" content="OpenTEAM Videos" />
+  <meta property="og:description" content="In-Depths series and video library" />
+  <meta property="og:image" content="assets/bg_malawi.jpg" />
+  <meta name="twitter:card" content="summary_large_image" />
+
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@300;400;600;700&family=Crimson+Pro:ital,wght@0,300;0,400;0,600;1,400&family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-
   <link rel="stylesheet" href="styles.css" />
 
   <style>
-    /* Minimal page-specific styling to keep it clean and consistent. */
-    .videos-grid{
-      display:grid;
-      grid-template-columns: 1.6fr .9fr;
-      gap: 16px;
-      align-items:start;
-      margin-top: 14px;
-    }
-    @media (max-width: 980px){
-      .videos-grid{ grid-template-columns: 1fr; }
-    }
-
-    .video-shell{
+    /* Keep additions minimal and aligned with existing rails/cards */
+    .video-embed{
       border-radius: 18px;
       overflow:hidden;
-      border: 1px solid rgba(255,255,255,.14);
-      background: rgba(0,0,0,.18);
-      box-shadow: 0 18px 60px rgba(0,0,0,.28);
+      border: 1px solid var(--border);
+      background: #000;
+      box-shadow: var(--shadow);
     }
-    .video-shell iframe{
-      width:100%;
-      aspect-ratio: 16/9;
-      border:0;
+    .video-embed iframe{
+      width: 100%;
+      aspect-ratio: 16 / 9;
+      border: 0;
       display:block;
       background:#000;
     }
 
-    .playlist-panel{
-      border-radius: 18px;
-      border: 1px solid rgba(255,255,255,.14);
-      background: rgba(0,0,0,.14);
-      overflow:hidden;
+    /* Video card visuals (re-using wg-project-card styling) */
+    .video-card{
+      cursor: pointer;
+      user-select: none;
+      transition: transform .08s ease, box-shadow .08s ease;
     }
-    .playlist-head{
-      padding: 14px 14px 10px;
-      border-bottom: 1px solid rgba(255,255,255,.10);
+    .video-card:hover{ transform: translateY(-1px); }
+    .video-card[aria-current="true"]{
+      outline: 2px solid rgba(43,43,43,0.14);
+      box-shadow: 0 18px 30px rgba(0,0,0,0.10);
+    }
+
+    .video-thumb{
+      height: 124px;
+      background:
+        radial-gradient(1200px 420px at 0% 0%, rgba(132,167,120,0.55), rgba(255,255,255,0) 55%),
+        radial-gradient(1200px 420px at 100% 100%, rgba(88,130,190,0.35), rgba(255,255,255,0) 55%),
+        linear-gradient(135deg, rgba(25,25,25,0.10), rgba(25,25,25,0.02));
+      border-bottom: 1px solid var(--border);
+      position: relative;
       display:flex;
-      gap: 10px;
-      align-items: baseline;
-      justify-content: space-between;
-      flex-wrap: wrap;
+      align-items:flex-end;
+      padding: 12px;
     }
-    .playlist-head h3{
-      margin:0;
-      font-size: 16px;
-      letter-spacing: .02em;
-    }
-    .playlist-meta{
-      display:flex;
-      gap: 10px;
-      align-items: center;
-      flex-wrap: wrap;
-    }
-    .pill{
+    .video-badge{
       display:inline-flex;
       align-items:center;
-      gap:6px;
-      padding: 6px 10px;
+      gap:8px;
+      padding: 7px 10px;
       border-radius: 999px;
-      background: rgba(255,255,255,.08);
-      border: 1px solid rgba(255,255,255,.10);
+      border: 1px solid rgba(43,43,43,0.14);
+      background: rgba(255,255,255,0.80);
       font-size: 12px;
-      opacity: .95;
+      font-weight: 600;
+      color: var(--text);
     }
-
-    .playlist-list{
-      max-height: 70vh;
-      overflow:auto;
-      padding: 6px;
-    }
-    @media (max-width: 980px){
-      .playlist-list{ max-height: 46vh; }
-    }
-
-    .video-item{
-      display:grid;
-      grid-template-columns: 120px 1fr;
-      gap: 10px;
-      padding: 10px;
-      border-radius: 14px;
-      cursor:pointer;
-      user-select:none;
-      border: 1px solid transparent;
-    }
-    .video-item:hover{
-      background: rgba(255,255,255,.06);
-      border-color: rgba(255,255,255,.10);
-    }
-    .video-item.active{
-      background: rgba(255,255,255,.10);
-      border-color: rgba(255,255,255,.18);
-    }
-
-    .thumb{
-      width: 120px;
-      height: 68px;
-      border-radius: 10px;
-      overflow:hidden;
-      background: rgba(0,0,0,.35);
-      border: 1px solid rgba(255,255,255,.10);
-      display:flex;
+    .playdot{
+      width: 18px;
+      height: 18px;
+      border-radius: 7px;
+      border: 1px solid rgba(43,43,43,0.18);
+      background: rgba(43,43,43,0.06);
+      display:inline-flex;
       align-items:center;
       justify-content:center;
+      font-size: 11px;
+      line-height: 1;
     }
-    .thumb img{
-      width:100%;
-      height:100%;
-      object-fit:cover;
-      display:block;
+    .video-body{
+      padding: 12px 12px 12px 12px;
     }
-
-    .vtitle{
-      margin: 0 0 6px;
-      font-size: 13px;
-      line-height: 1.25;
-      font-weight: 600;
+    .video-title{
+      margin: 0 0 6px 0;
+      font-size: 14px;
+      font-weight: 700;
+      line-height: 1.2;
     }
-    .vmeta{
-      margin:0;
+    .video-desc{
+      margin: 0;
       font-size: 12px;
-      opacity: .78;
-      line-height: 1.3;
+      opacity: .82;
+      line-height: 1.35;
     }
 
-    .videos-actions{
+    .video-actions{
       display:flex;
-      gap: 10px;
-      flex-wrap: wrap;
+      gap:10px;
+      flex-wrap:wrap;
       margin-top: 12px;
     }
-
-    .loading-row{
-      padding: 14px;
-      opacity: .82;
-    }
-    .error-row{
-      padding: 14px;
-      opacity: .95;
-    }
-    .error-row .muted{ opacity:.82; }
-
-    .sticky-caption{
-      margin-top: 12px;
-      opacity: .82;
-      font-size: 13px;
-      line-height: 1.45;
-    }
+    .muted-tight{ opacity: .82; margin-top: 10px; font-size: 13px; line-height: 1.45; }
   </style>
 </head>
 
 <body id="top">
   <a class="skip-link" href="#main">Skip to content</a>
 
-  <!-- Header / Drawer (kept consistent with site) -->
+  <!-- Header (matches site) -->
   <header class="nav-shell" role="banner">
     <button class="menu-button" id="menuButton" aria-controls="drawer" aria-expanded="false">
       <span class="menu-icon" aria-hidden="true"><span></span></span>
@@ -182,6 +126,7 @@
     </div>
   </header>
 
+  <!-- Drawer -->
   <aside class="drawer" id="drawer" aria-hidden="true">
     <div class="drawer-inner">
       <div class="drawer-top">
@@ -222,56 +167,154 @@
           </p>
         </div>
 
-        <div class="videos-grid">
-          <!-- Featured / now playing -->
-          <div>
-            <div class="panel">
-              <h3 style="margin-bottom:8px;">Now playing</h3>
-              <div class="video-shell" aria-label="Featured video player">
-                <iframe
-                  id="featuredPlayer"
-                  src="https://www.youtube.com/embed/videoseries?list=PLnl6JeuBOQB3RZKoacQ_1CGq8ssAVgu7y"
-                  title="OpenTEAM In-Depths"
-                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                  allowfullscreen></iframe>
-              </div>
+        <!-- Featured Player -->
+        <div class="panel" style="margin-top: 14px;">
+          <h3 style="margin:0 0 10px 0;">Featured</h3>
 
-              <div class="videos-actions">
-                <a class="btn small" id="openOnYouTube" href="https://www.youtube.com/playlist?list=PLnl6JeuBOQB3RZKoacQ_1CGq8ssAVgu7y" target="_blank" rel="noopener">
-                  Open playlist on YouTube ↗
-                </a>
-                <a class="btn small" href="index.html#convenings">Back to Convenings ↗</a>
-              </div>
+          <div class="video-embed" aria-label="Featured playlist video">
+            <iframe
+              id="featuredPlayer"
+              src="https://www.youtube.com/embed/videoseries?list=PLnl6JeuBOQB3RZKoacQ_1CGq8ssAVgu7y&index=0"
+              title="OpenTEAM In-Depths (Featured)"
+              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+              allowfullscreen></iframe>
+          </div>
 
-              <div class="sticky-caption muted" id="nowPlayingTitle">
-                Loading playlist…
-              </div>
-            </div>
+          <div class="video-actions">
+            <a class="btn small" href="https://www.youtube.com/playlist?list=PLnl6JeuBOQB3RZKoacQ_1CGq8ssAVgu7y" target="_blank" rel="noopener">
+              Open playlist on YouTube ↗
+            </a>
+            <a class="btn small" href="index.html#convenings">Back to Convenings ↗</a>
+          </div>
 
-            <div class="panel" style="margin-top:16px;">
-              <h3>Suggest a video</h3>
-              <p>Have a session recording, primer, or story that belongs in the library?</p>
-              <a class="btn small" href="mailto:info@openteam.community?subject=OpenTEAM%20-%20Video%20Suggestion">Email a suggestion</a>
-              <div style="height: 10px;"></div>
-              <p class="muted" style="margin:0;">Tip: include a YouTube link and a one-sentence summary.</p>
+          <div class="muted-tight" id="nowPlayingLabel">
+            Select a card below to play that video here.
+          </div>
+        </div>
+
+        <!-- Rail (Video Cards) -->
+        <div class="wg-project-cards" style="margin-top: 18px;">
+          <div class="wg-project-cards__head">
+            <h3 style="margin:0 0 6px 0;">OpenTEAM In-Depths Playlist</h3>
+            <p class="muted" style="margin:0;">
+              Scroll the rail to browse. Click a card to play.
+            </p>
+          </div>
+
+          <div class="wg-project-cards__wrap" style="margin-top: 10px;">
+            <!-- Optional fades + arrows (same pattern as other rails) -->
+            <div class="wg-rail-fade wg-rail-fade--left"></div>
+            <div class="wg-rail-fade wg-rail-fade--right"></div>
+            <button class="wg-edge-arrow wg-edge-arrow--left" type="button" aria-label="Scroll left" data-rail-arrow="left">‹</button>
+            <button class="wg-edge-arrow wg-edge-arrow--right" type="button" aria-label="Scroll right" data-rail-arrow="right">›</button>
+
+            <div class="wg-project-cards__rail" id="videoRail" aria-label="Video rail">
+              <!-- Card template: uses playlist index (0-based). Increase/decrease count as needed. -->
+              <!-- NOTE: Titles are “Episode” placeholders because YouTube blocks reliable no-auth listing in many static hosting contexts. -->
+              <!-- If you later want true titles/thumbnails, you can replace each card’s title text manually (or provide a list and I’ll fill it). -->
+
+              <!-- 01 -->
+              <article class="wg-project-card video-card" role="button" tabindex="0" aria-current="true" data-index="0" data-label="Episode 1">
+                <div class="video-thumb">
+                  <span class="video-badge"><span class="playdot">▶</span> Episode 01</span>
+                </div>
+                <div class="video-body">
+                  <p class="video-title">OpenTEAM In-Depth — Episode 1</p>
+                  <p class="video-desc">Click to play in the featured viewer.</p>
+                </div>
+              </article>
+
+              <!-- 02 -->
+              <article class="wg-project-card video-card" role="button" tabindex="0" aria-current="false" data-index="1" data-label="Episode 2">
+                <div class="video-thumb"><span class="video-badge"><span class="playdot">▶</span> Episode 02</span></div>
+                <div class="video-body">
+                  <p class="video-title">OpenTEAM In-Depth — Episode 2</p>
+                  <p class="video-desc">Click to play in the featured viewer.</p>
+                </div>
+              </article>
+
+              <!-- 03 -->
+              <article class="wg-project-card video-card" role="button" tabindex="0" aria-current="false" data-index="2" data-label="Episode 3">
+                <div class="video-thumb"><span class="video-badge"><span class="playdot">▶</span> Episode 03</span></div>
+                <div class="video-body">
+                  <p class="video-title">OpenTEAM In-Depth — Episode 3</p>
+                  <p class="video-desc">Click to play in the featured viewer.</p>
+                </div>
+              </article>
+
+              <!-- 04 -->
+              <article class="wg-project-card video-card" role="button" tabindex="0" aria-current="false" data-index="3" data-label="Episode 4">
+                <div class="video-thumb"><span class="video-badge"><span class="playdot">▶</span> Episode 04</span></div>
+                <div class="video-body">
+                  <p class="video-title">OpenTEAM In-Depth — Episode 4</p>
+                  <p class="video-desc">Click to play in the featured viewer.</p>
+                </div>
+              </article>
+
+              <!-- 05 -->
+              <article class="wg-project-card video-card" role="button" tabindex="0" aria-current="false" data-index="4" data-label="Episode 5">
+                <div class="video-thumb"><span class="video-badge"><span class="playdot">▶</span> Episode 05</span></div>
+                <div class="video-body">
+                  <p class="video-title">OpenTEAM In-Depth — Episode 5</p>
+                  <p class="video-desc">Click to play in the featured viewer.</p>
+                </div>
+              </article>
+
+              <!-- 06 -->
+              <article class="wg-project-card video-card" role="button" tabindex="0" aria-current="false" data-index="5" data-label="Episode 6">
+                <div class="video-thumb"><span class="video-badge"><span class="playdot">▶</span> Episode 06</span></div>
+                <div class="video-body">
+                  <p class="video-title">OpenTEAM In-Depth — Episode 6</p>
+                  <p class="video-desc">Click to play in the featured viewer.</p>
+                </div>
+              </article>
+
+              <!-- 07 -->
+              <article class="wg-project-card video-card" role="button" tabindex="0" aria-current="false" data-index="6" data-label="Episode 7">
+                <div class="video-thumb"><span class="video-badge"><span class="playdot">▶</span> Episode 07</span></div>
+                <div class="video-body">
+                  <p class="video-title">OpenTEAM In-Depth — Episode 7</p>
+                  <p class="video-desc">Click to play in the featured viewer.</p>
+                </div>
+              </article>
+
+              <!-- 08 -->
+              <article class="wg-project-card video-card" role="button" tabindex="0" aria-current="false" data-index="7" data-label="Episode 8">
+                <div class="video-thumb"><span class="video-badge"><span class="playdot">▶</span> Episode 08</span></div>
+                <div class="video-body">
+                  <p class="video-title">OpenTEAM In-Depth — Episode 8</p>
+                  <p class="video-desc">Click to play in the featured viewer.</p>
+                </div>
+              </article>
+
+              <!-- 09 -->
+              <article class="wg-project-card video-card" role="button" tabindex="0" aria-current="false" data-index="8" data-label="Episode 9">
+                <div class="video-thumb"><span class="video-badge"><span class="playdot">▶</span> Episode 09</span></div>
+                <div class="video-body">
+                  <p class="video-title">OpenTEAM In-Depth — Episode 9</p>
+                  <p class="video-desc">Click to play in the featured viewer.</p>
+                </div>
+              </article>
+
+              <!-- 10 -->
+              <article class="wg-project-card video-card" role="button" tabindex="0" aria-current="false" data-index="9" data-label="Episode 10">
+                <div class="video-thumb"><span class="video-badge"><span class="playdot">▶</span> Episode 10</span></div>
+                <div class="video-body">
+                  <p class="video-title">OpenTEAM In-Depth — Episode 10</p>
+                  <p class="video-desc">Click to play in the featured viewer.</p>
+                </div>
+              </article>
+
+              <!-- Add more episodes by duplicating a card and incrementing data-index -->
+              <!-- e.g., data-index="10" => Episode 11, etc. -->
             </div>
           </div>
 
-          <!-- Playlist (always visible list) -->
-          <aside class="playlist-panel" aria-label="Playlist list">
-            <div class="playlist-head">
-              <h3>OpenTEAM In-Depths</h3>
-              <div class="playlist-meta">
-                <span class="pill" id="countPill">Loading…</span>
-                <span class="pill">Scrollable list</span>
-              </div>
-            </div>
-
-            <div class="playlist-list" id="playlistList">
-              <div class="loading-row muted">Loading videos…</div>
-            </div>
-          </aside>
+          <div class="muted-tight">
+            If you add more videos to the playlist, you can extend this rail by duplicating cards and increasing the index.
+          </div>
         </div>
+
       </div>
     </section>
   </main>
@@ -310,170 +353,68 @@
       if (y) y.textContent = String(new Date().getFullYear());
     })();
 
-    // --- Playlist rendering (no extra click to see list) ---
+    // Rail arrows (same behavior as other rails, but implemented locally for robustness)
+    (function(){
+      const wrap = document.querySelector(".wg-project-cards__wrap");
+      const rail = document.getElementById("videoRail");
+      if (!wrap || !rail) return;
+
+      const leftBtn = wrap.querySelector('[data-rail-arrow="left"]');
+      const rightBtn = wrap.querySelector('[data-rail-arrow="right"]');
+
+      function step(){
+        // scroll by ~ one card width
+        return Math.max(260, Math.min(rail.clientWidth * 0.75, 520));
+      }
+      function updateButtons(){
+        const maxScroll = rail.scrollWidth - rail.clientWidth - 2;
+        if (leftBtn) leftBtn.disabled = rail.scrollLeft <= 2;
+        if (rightBtn) rightBtn.disabled = rail.scrollLeft >= maxScroll;
+      }
+
+      if (leftBtn) leftBtn.addEventListener("click", () => rail.scrollBy({ left: -step(), behavior: "smooth" }));
+      if (rightBtn) rightBtn.addEventListener("click", () => rail.scrollBy({ left: step(), behavior: "smooth" }));
+
+      rail.addEventListener("scroll", updateButtons);
+      window.addEventListener("resize", updateButtons);
+      setTimeout(updateButtons, 50);
+    })();
+
+    // Video selection: swap featured iframe to playlist index
     (function(){
       const PLAYLIST_ID = "PLnl6JeuBOQB3RZKoacQ_1CGq8ssAVgu7y";
-      const listEl = document.getElementById("playlistList");
       const player = document.getElementById("featuredPlayer");
-      const nowTitle = document.getElementById("nowPlayingTitle");
-      const countPill = document.getElementById("countPill");
+      const label = document.getElementById("nowPlayingLabel");
+      const cards = Array.from(document.querySelectorAll(".video-card"));
 
-      // Use RSS feed for playlist (lightweight) and fetch through r.jina.ai to avoid CORS issues on GitHub Pages.
-      const feedUrl = `https://www.youtube.com/feeds/videos.xml?playlist_id=${PLAYLIST_ID}`;
-      const proxyUrl = `https://r.jina.ai/http://r.jina.ai/${feedUrl}`; // double-prefix works reliably in some deployments
-      const proxyUrl2 = `https://r.jina.ai/${feedUrl}`; // fallback
-
-      function parseXml(xmlText){
-        const parser = new DOMParser();
-        return parser.parseFromString(xmlText, "text/xml");
+      function setCurrent(el){
+        cards.forEach(c => c.setAttribute("aria-current", c === el ? "true" : "false"));
       }
 
-      function getText(node, sel){
-        const el = node.querySelector(sel);
-        return el ? (el.textContent || "").trim() : "";
+      function playIndex(index, text){
+        // Using playlist + index keeps it aligned with the playlist order.
+        // Autoplay to feel immediate.
+        player.src = `https://www.youtube.com/embed/videoseries?list=${PLAYLIST_ID}&index=${index}&autoplay=1&rel=0`;
+        if (label) label.textContent = text ? `Now playing: ${text}` : "Now playing";
       }
 
-      function getAttr(node, sel, attr){
-        const el = node.querySelector(sel);
-        return el ? (el.getAttribute(attr) || "").trim() : "";
-      }
+      cards.forEach(card => {
+        const idx = Number(card.dataset.index || "0");
+        const text = card.dataset.label || `Episode ${idx + 1}`;
 
-      function videoIdFromLink(link){
-        // RSS "link" is like https://www.youtube.com/watch?v=VIDEOID
-        try{
-          const u = new URL(link);
-          return u.searchParams.get("v") || "";
-        }catch(e){
-          const m = link.match(/[?&]v=([^&]+)/);
-          return m ? m[1] : "";
+        function activate(){
+          setCurrent(card);
+          playIndex(idx, text);
         }
-      }
 
-      function thumbUrl(id){
-        // Use mqdefault for consistent list size.
-        return `https://i.ytimg.com/vi/${id}/mqdefault.jpg`;
-      }
-
-      function setActive(activeId){
-        const items = listEl.querySelectorAll(".video-item");
-        items.forEach(it => {
-          it.classList.toggle("active", it.dataset.videoId === activeId);
+        card.addEventListener("click", activate);
+        card.addEventListener("keydown", (e) => {
+          if (e.key === "Enter" || e.key === " ") { e.preventDefault(); activate(); }
         });
-      }
+      });
 
-      function playVideo(videoId, title){
-        if (!videoId) return;
-        // Swap to single-video embed (autoplay) so playback is immediate.
-        player.src = `https://www.youtube.com/embed/${videoId}?autoplay=1&rel=0`;
-        nowTitle.textContent = title ? title : "Now playing";
-        setActive(videoId);
-      }
-
-      function render(entries){
-        if (!entries.length){
-          listEl.innerHTML = `
-            <div class="error-row">
-              <div><strong>Playlist unavailable</strong></div>
-              <div class="muted" style="margin-top:6px;">
-                Couldn’t load the playlist list on this site. You can still open it on YouTube.
-              </div>
-              <div style="margin-top:10px;">
-                <a class="btn small" href="https://www.youtube.com/playlist?list=${PLAYLIST_ID}" target="_blank" rel="noopener">Open playlist on YouTube ↗</a>
-              </div>
-            </div>`;
-          countPill.textContent = "0 videos";
-          return;
-        }
-
-        countPill.textContent = `${entries.length} videos`;
-
-        listEl.innerHTML = "";
-        entries.forEach((v, idx) => {
-          const item = document.createElement("div");
-          item.className = "video-item";
-          item.dataset.videoId = v.videoId;
-          item.setAttribute("role", "button");
-          item.setAttribute("tabindex", "0");
-          item.setAttribute("aria-label", `Play: ${v.title}`);
-
-          item.innerHTML = `
-            <div class="thumb">
-              <img loading="lazy" src="${thumbUrl(v.videoId)}" alt="" />
-            </div>
-            <div>
-              <p class="vtitle">${v.title}</p>
-              <p class="vmeta">${v.author || ""}</p>
-            </div>
-          `;
-
-          function activate(){
-            playVideo(v.videoId, v.title);
-          }
-          item.addEventListener("click", activate);
-          item.addEventListener("keydown", (e) => {
-            if (e.key === "Enter" || e.key === " ") { e.preventDefault(); activate(); }
-          });
-
-          listEl.appendChild(item);
-
-          // Auto-select first
-          if (idx === 0){
-            // keep initial playlist embed until user clicks OR immediately play first video:
-            // Uncomment the next line if you want it to auto-play the first video on load.
-            // playVideo(v.videoId, v.title);
-            nowTitle.textContent = v.title || "OpenTEAM In-Depths";
-            setActive(v.videoId);
-          }
-        });
-      }
-
-      async function fetchFeed(url){
-        const res = await fetch(url, { method:"GET" });
-        if (!res.ok) throw new Error(`HTTP ${res.status}`);
-        return await res.text();
-      }
-
-      async function load(){
-        try{
-          // Try proxy #1 then fallback proxy #2
-          let txt;
-          try{
-            txt = await fetchFeed(proxyUrl);
-          }catch(e){
-            txt = await fetchFeed(proxyUrl2);
-          }
-
-          // r.jina.ai returns readable text that still contains the XML; extract the XML block if wrapped.
-          const xmlStart = txt.indexOf("<?xml");
-          const xmlText = xmlStart >= 0 ? txt.slice(xmlStart) : txt;
-
-          const xml = parseXml(xmlText);
-          const entries = Array.from(xml.querySelectorAll("entry")).map(entry => {
-            const link = getAttr(entry, "link", "href");
-            const title = getText(entry, "title");
-            const author = getText(entry, "author name");
-            const videoId = videoIdFromLink(link);
-            return { title, author, link, videoId };
-          }).filter(v => v.videoId);
-
-          render(entries);
-        }catch(err){
-          listEl.innerHTML = `
-            <div class="error-row">
-              <div><strong>Playlist couldn’t load here.</strong></div>
-              <div class="muted" style="margin-top:6px;">
-                This can happen if the feed request is blocked or rate-limited. You can still view the full list on YouTube.
-              </div>
-              <div style="margin-top:10px;">
-                <a class="btn small" href="https://www.youtube.com/playlist?list=${PLAYLIST_ID}" target="_blank" rel="noopener">Open playlist on YouTube ↗</a>
-              </div>
-            </div>`;
-          countPill.textContent = "Playlist";
-          nowTitle.textContent = "OpenTEAM In-Depths Playlist";
-        }
-      }
-
-      load();
+      // Set initial label (matches first card)
+      if (label) label.textContent = "Now playing: Episode 01";
     })();
   </script>
 </body>
