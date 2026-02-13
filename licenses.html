@@ -1,0 +1,186 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>OpenTEAM — Licenses</title>
+  <meta name="description" content="OpenTEAM licensing guidance for code, content, and data, adapted from common open licensing practices." />
+
+  <meta property="og:title" content="OpenTEAM Licenses" />
+  <meta property="og:description" content="Licenses and re-use guidance for OpenTEAM resources" />
+  <meta property="og:image" content="assets/bg_malawi.jpg" />
+  <meta name="twitter:card" content="summary_large_image" />
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@300;400;600;700&family=Crimson+Pro:ital,wght@0,300;0,400;0,600;1,400&family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+  <link rel="stylesheet" href="styles.css" />
+</head>
+
+<body id="top">
+  <a class="skip-link" href="#main">Skip to content</a>
+
+  <header class="nav-shell" role="banner">
+    <button class="menu-button" id="menuButton" aria-controls="drawer" aria-expanded="false">
+      <span class="menu-icon" aria-hidden="true"><span></span></span>
+      <span class="menu-label">MENU</span>
+    </button>
+
+    <div class="nav-title">
+      <div class="nav-title-text">Open Technology Ecosystem for Agricultural Management</div>
+    </div>
+
+    <div class="nav-logo" aria-hidden="true">
+      <img src="assets/openteam_logo.svg" alt="" />
+    </div>
+  </header>
+
+  <aside class="drawer" id="drawer" aria-hidden="true">
+    <div class="drawer-inner">
+      <div class="drawer-top">
+        <div class="drawer-mark">
+          <img src="assets/openteam_logo.svg" alt="OpenTEAM logo" />
+        </div>
+        <div class="drawer-vertical">OpenTEAM</div>
+        <button class="drawer-close" id="drawerClose" aria-label="Close menu">✕</button>
+      </div>
+
+      <nav class="drawer-links" aria-label="Site">
+        <a href="index.html#home" class="drawer-link">HOME</a>
+        <a href="index.html#initiatives" class="drawer-link">INITIATIVES</a>
+        <a href="index.html#pilots" class="drawer-link">COLLABATHONS</a>
+        <a href="index.html#convenings" class="drawer-link">CONVENINGS</a>
+        <a href="index.html#library" class="drawer-link">TOOLS, COMMUNITIES &amp; PLATFORMS</a>
+        <a href="index.html#reading" class="drawer-link">INSPIRATIONS</a>
+        <a href="index.html#join" class="drawer-link">JOIN</a>
+        <a href="videos.html" class="drawer-link">VIDEOS</a>
+        <a href="licenses.html" class="drawer-link">LICENSES</a>
+      </nav>
+
+      <div class="drawer-meta">
+        <div class="drawer-meta-title">Contact</div>
+        <a class="drawer-meta-link" href="mailto:info@openteam.community?subject=OpenTEAM%20Website%20Inquiry">info@openteam.community</a>
+      </div>
+    </div>
+  </aside>
+  <div class="scrim" id="scrim" aria-hidden="true"></div>
+
+  <main id="main">
+    <section class="section" id="licenses-page">
+      <div class="container">
+        <div class="section-head">
+          <h2>Licenses</h2>
+          <p>
+            OpenTEAM resources span software, documents, templates, and datasets. Clear licensing makes it easier to re-use and steward shared work.
+            This page provides a practical starting point you can adapt for your project.
+          </p>
+        </div>
+
+        <article class="panel" style="margin-top: 14px;">
+          <h3 style="margin-top:0;">How to choose</h3>
+          <ul style="margin: 10px 0 0 18px;">
+            <li><strong>Code</strong>: pick a permissive OSS license (e.g., Apache-2.0 or MIT) unless you need stronger reciprocity.</li>
+            <li><strong>Content</strong>: use a Creative Commons license to communicate how text, slides, and graphics may be shared.</li>
+            <li><strong>Data</strong>: make data licensing explicit (and include provenance, consent, and stewardship constraints where relevant).</li>
+            <li><strong>Traditional knowledge / sensitive data</strong>: licensing alone is not sufficient—use governance and protocols.</li>
+          </ul>
+          <div class="muted" style="margin-top: 10px;">
+            Note: This is guidance, not legal advice. If you have questions about compliance or rights, consult counsel.
+          </div>
+        </article>
+
+        <div class="split" style="margin-top: 16px;">
+          <article class="panel">
+            <h3>Software (code)</h3>
+            <p>Common choices for open-source software:</p>
+            <ul style="margin: 10px 0 0 18px;">
+              <li><strong>Apache License 2.0</strong> — permissive, includes an explicit patent grant.</li>
+              <li><strong>MIT</strong> — permissive, simple, widely used.</li>
+              <li><strong>GPLv3</strong> — strong copyleft; derivatives must remain open under the same license.</li>
+            </ul>
+            <p class="muted" style="margin-top: 10px;">Include a LICENSE file in your repository and add SPDX identifiers (e.g., <code>Apache-2.0</code>).</p>
+          </article>
+
+          <article class="panel">
+            <h3>Written materials (content)</h3>
+            <p>For reports, guides, slides, and documentation:</p>
+            <ul style="margin: 10px 0 0 18px;">
+              <li><strong>CC BY 4.0</strong> — share and adapt with attribution.</li>
+              <li><strong>CC BY-SA 4.0</strong> — attribution + share-alike for derivatives.</li>
+              <li><strong>CC0</strong> — dedicate to the public domain (when appropriate).</li>
+            </ul>
+            <p class="muted" style="margin-top: 10px;">If you include third-party images or text, ensure you have rights to relicense them.</p>
+          </article>
+        </div>
+
+        <div class="split" style="margin-top: 16px;">
+          <article class="panel">
+            <h3>Data</h3>
+            <p>For datasets, schemas, and derived indicators:</p>
+            <ul style="margin: 10px 0 0 18px;">
+              <li><strong>ODC-By</strong> — attribution for database rights (commonly used in open data contexts).</li>
+              <li><strong>CC BY 4.0</strong> — often used for data releases when database-rights language is not required.</li>
+              <li><strong>CC0</strong> — maximum re-use; pair with clear citation guidance.</li>
+            </ul>
+            <p class="muted" style="margin-top: 10px;">Always include metadata: who created it, when, how collected, and any constraints.</p>
+          </article>
+
+          <article class="panel">
+            <h3>Practical checklist</h3>
+            <ol style="margin: 10px 0 0 18px;">
+              <li>Identify the asset type (code, content, data, mixed).</li>
+              <li>Pick a license aligned with intended re-use and reciprocity.</li>
+              <li>Add a clear notice (LICENSE file, footer, or dataset README).</li>
+              <li>Document provenance, attribution, and stewardship responsibilities.</li>
+            </ol>
+            <div style="margin-top: 12px;">
+              <a class="btn small" href="index.html#join">Ask the community ↗</a>
+            </div>
+          </article>
+        </div>
+
+        <article class="panel" style="margin-top: 16px;">
+          <h3 style="margin-top:0;">More context</h3>
+          <p>
+            This page is inspired by the way open data communities describe licensing options and trade-offs.
+            For a deeper dive, explore the Open Environmental Data Project’s licensing guidance.
+          </p>
+          <div style="margin-top: 12px;">
+            <a class="btn small" href="https://www.openenvironmentaldata.org/licenses" target="_blank" rel="noopener">View OEDP licenses page ↗</a>
+          </div>
+        </article>
+
+      </div>
+    </section>
+  </main>
+
+  <footer class="footer">
+    <div class="container footer-grid">
+      <div class="footer-brand">
+        <img src="assets/openteam_logo.svg" alt="OpenTEAM logo" class="footer-logo" />
+        <div>
+          <div class="footer-title">OpenTEAM</div>
+          <div class="footer-subtitle">Open Technology Ecosystem for Agricultural Management</div>
+          <div class="footer-meta">© <span id="year"></span> OpenTEAM — Built for GitLab Pages / GitHub Pages</div>
+          <div class="footer-meta small">Design attribution: inspired by Open Environmental Data Project (openenvironmentaldata.org).</div>
+        </div>
+      </div>
+
+      <div class="footer-links">
+        <a href="index.html#home">Home</a>
+        <a href="index.html#initiatives">Our Work</a>
+        <a href="index.html#pilots">Collabathons</a>
+        <a href="index.html#convenings">Convenings</a>
+        <a href="index.html#library">Library</a>
+        <a href="videos.html">Videos</a>
+        <a href="index.html#reading">Inspirations</a>
+        <a href="index.html#join">Join</a>
+        <a href="licenses.html">Licenses</a>
+      </div>
+    </div>
+  </footer>
+
+  <script src="script.js"></script>
+</body>
+</html>
