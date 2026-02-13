@@ -16,6 +16,50 @@
   <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@300;400;600;700&family=Crimson+Pro:ital,wght@0,300;0,400;0,600;1,400&family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 
   <link rel="stylesheet" href="styles.css" />
+<style>
+  .video-library{
+    display:grid;
+    grid-template-columns: 1.35fr 1fr;
+    gap: 12px;
+    align-items: start;
+    margin-top: 10px;
+  }
+  .playlist-list{
+    max-height: 420px;
+    overflow: auto;
+    border: 1px solid rgba(255,255,255,.14);
+    border-radius: 16px;
+    padding: 10px;
+    background: rgba(0,0,0,.18);
+  }
+  .playlist-item{
+    display:flex;
+    gap: 10px;
+    align-items: flex-start;
+    padding: 8px;
+    border-radius: 12px;
+    cursor: pointer;
+    text-decoration: none;
+    color: inherit;
+  }
+  .playlist-item:hover{ background: rgba(255,255,255,.06); }
+  .playlist-thumb{
+    width: 120px;
+    flex: 0 0 120px;
+    border-radius: 10px;
+    overflow: hidden;
+    border: 1px solid rgba(255,255,255,.12);
+  }
+  .playlist-thumb img{ width:100%; height:auto; display:block; }
+  .playlist-meta{ font-size: 14px; line-height: 1.25; }
+  .playlist-title{ font-weight: 600; }
+  .playlist-date{ margin-top: 4px; opacity: .75; font-size: 12px; }
+  @media (max-width: 900px){
+    .video-library{ grid-template-columns: 1fr; }
+    .playlist-thumb{ width: 96px; flex-basis: 96px; }
+    .playlist-list{ max-height: 320px; }
+  }
+</style>
 </head>
 
 <body id="top">
@@ -96,17 +140,27 @@
 
         <div class="split" style="margin-top: 16px;">
           <article class="panel">
-            <h3>Browse the full library</h3>
-            <p class="muted" style="margin-top: 6px;">Scroll through the playlist and select any video to play.</p>
-            <div class="video-embed video-embed--library" aria-label="Video library">
-              <iframe
-                src="https://www.youtube.com/embed?listType=playlist&list=PLnl6JeuBOQB3RZKoacQ_1CGq8ssAVgu7y"
-                title="OpenTEAM In-Depths (Library)"
-                frameborder="0"
-                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                allowfullscreen></iframe>
-            </div>
-          </article>
+  <h3>Browse the full library</h3>
+  <p class="muted" style="margin-top: 6px;">Scroll the full list and click any video to play.</p>
+
+  <div class="video-library" aria-label="Video library">
+    <div class="video-embed video-embed--library" aria-label="Library player">
+      <iframe
+        id="libraryPlayer"
+        src="https://www.youtube.com/embed/videoseries?list=PLnl6JeuBOQB3RZKoacQ_1CGq8ssAVgu7y&playsinline=1"
+        title="OpenTEAM In-Depths (Library Player)"
+        frameborder="0"
+        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+        allowfullscreen></iframe>
+    </div>
+
+    <div id="playlistList" class="playlist-list" aria-label="Playlist list">
+      <div class="muted" style="font-size: 14px;">Loading playlist…</div>
+    </div>
+  </div>
+
+  <p class="muted" style="margin-top: 10px;">If the list doesn’t load, use <a href="https://youtube.com/playlist?list=PLnl6JeuBOQB3RZKoacQ_1CGq8ssAVgu7y" target="_blank" rel="noopener">Open on YouTube</a>.</p>
+</article>
 
           <article class="panel">
             <h3>Suggest a video</h3>
@@ -147,5 +201,104 @@
   </footer>
 
   <script src="script.js"></script>
+<script>
+  (function () {
+    const playlistId = "PLnl6JeuBOQB3RZKoacQ_1CGq8ssAVgu7y";
+    const feedUrl = "https://www.youtube.com/feeds/videos.xml?playlist_id=" + playlistId;
+
+    const listEl = document.getElementById("playlistList");
+    const playerEl = document.getElementById("libraryPlayer");
+    if (!listEl || !playerEl) return;
+
+    function safeText(nodeList) {
+      return nodeList && nodeList[0] ? (nodeList[0].textContent || "").trim() : "";
+    }
+
+    function buildItem(videoId, title, thumbUrl, published) {
+      const a = document.createElement("a");
+      a.href = "https://youtu.be/" + videoId;
+      a.className = "playlist-item";
+      a.target = "_blank";
+      a.rel = "noopener";
+
+      a.addEventListener("click", function (e) {
+        // Play inline instead of navigating away.
+        e.preventDefault();
+        playerEl.src = "https://www.youtube.com/embed/" + videoId + "?playsinline=1";
+        // Highlight active item
+        const prev = listEl.querySelector(".playlist-item[aria-current='true']");
+        if (prev) prev.removeAttribute("aria-current");
+        a.setAttribute("aria-current", "true");
+      });
+
+      const thumb = document.createElement("div");
+      thumb.className = "playlist-thumb";
+      const img = document.createElement("img");
+      img.loading = "lazy";
+      img.alt = "";
+      img.src = thumbUrl || ("https://i.ytimg.com/vi/" + videoId + "/hqdefault.jpg");
+      thumb.appendChild(img);
+
+      const meta = document.createElement("div");
+      meta.className = "playlist-meta";
+      const t = document.createElement("div");
+      t.className = "playlist-title";
+      t.textContent = title || "Untitled";
+      const d = document.createElement("div");
+      d.className = "playlist-date";
+      d.textContent = published ? new Date(published).toLocaleDateString() : "";
+      meta.appendChild(t);
+      meta.appendChild(d);
+
+      a.appendChild(thumb);
+      a.appendChild(meta);
+      return a;
+    }
+
+    fetch(feedUrl)
+      .then((r) => r.text())
+      .then((xmlText) => {
+        const parser = new DOMParser();
+        const xml = parser.parseFromString(xmlText, "text/xml");
+        const entries = Array.from(xml.getElementsByTagName("entry"));
+        if (!entries.length) throw new Error("No playlist entries found.");
+
+        listEl.innerHTML = "";
+        let firstVideoId = null;
+
+        entries.forEach((entry) => {
+          const videoId =
+            safeText(entry.getElementsByTagName("yt:videoId")) ||
+            safeText(entry.getElementsByTagNameNS("http://www.youtube.com/xml/schemas/2015", "videoId"));
+
+          const title = safeText(entry.getElementsByTagName("title"));
+          const published = safeText(entry.getElementsByTagName("published"));
+
+          // media:thumbnail url
+          let thumbUrl = "";
+          const thumbs = entry.getElementsByTagName("media:thumbnail");
+          if (thumbs && thumbs[0] && thumbs[0].getAttribute) {
+            thumbUrl = thumbs[0].getAttribute("url") || "";
+          }
+
+          if (!videoId) return;
+          if (!firstVideoId) firstVideoId = videoId;
+
+          listEl.appendChild(buildItem(videoId, title, thumbUrl, published));
+        });
+
+        // Start with the first item highlighted (keep playlist player until click).
+        const firstItem = listEl.querySelector(".playlist-item");
+        if (firstItem) firstItem.setAttribute("aria-current", "true");
+      })
+      .catch(() => {
+        // Fallback: show a direct playlist player (works even if feed is blocked).
+        listEl.innerHTML =
+          '<div class="muted" style="font-size:14px;">Playlist list couldn\'t load here. Use <a href="https://youtube.com/playlist?list=' +
+          playlistId +
+          '" target="_blank" rel="noopener">Open on YouTube</a>.</div>';
+      });
+  })();
+</script>
 </body>
 </html>
