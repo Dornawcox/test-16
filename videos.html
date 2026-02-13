@@ -240,27 +240,27 @@
           <p>Archived learning sessions from Open Agriculture and partners.</p>
         </div>
 
-        <!-- Featured video -->
+        <!-- Featured video (playlist embed) -->
         <div class="panel" style="margin-top: 14px;">
           <h3 style="margin:0 0 10px 0;">Featured</h3>
 
           <div class="video-embed" aria-label="Featured video player">
             <iframe
               id="featuredPlayer"
-              src=""
-              title="Featured video"
+              src="https://www.youtube.com/embed/videoseries?list=PLnl6JeuBOQB3RZKoacQ_1CGq8ssAVgu7y"
+              title="OpenTEAM In-Depths Playlist"
               allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
               allowfullscreen></iframe>
           </div>
 
           <div class="video-actions">
-            <a class="btn small" id="openOnYouTube" href="#" target="_blank" rel="noopener">Open on YouTube ↗</a>
+            <a class="btn small" id="openOnYouTube" href="https://www.youtube.com/playlist?list=PLnl6JeuBOQB3RZKoacQ_1CGq8ssAVgu7y" target="_blank" rel="noopener">Open playlist on YouTube ↗</a>
             <a class="btn small" href="index.html#convenings">Back to Convenings ↗</a>
           </div>
 
-          <div class="muted-tight" id="nowPlayingLabel">Now playing:</div>
+          <div class="muted-tight" id="nowPlayingLabel">Now playing: OpenTEAM In-Depths Playlist</div>
 
-          <!-- Rail moved directly below the featured player -->
+          <!-- Rail directly below the featured player -->
           <div class="video-rail-wrap" aria-label="Video rail section">
             <div class="rail-fade left"></div>
             <div class="rail-fade right"></div>
@@ -332,6 +332,9 @@
       { id: "8upk0oY-Mhg", label: "Archived Session 15" }
     ];
 
+    const PLAYLIST_URL = "https://www.youtube.com/playlist?list=PLnl6JeuBOQB3RZKoacQ_1CGq8ssAVgu7y";
+    const PLAYLIST_EMBED = "https://www.youtube.com/embed/videoseries?list=PLnl6JeuBOQB3RZKoacQ_1CGq8ssAVgu7y";
+
     const rail = document.getElementById("videoRail");
     const player = document.getElementById("featuredPlayer");
     const nowLabel = document.getElementById("nowPlayingLabel");
@@ -340,7 +343,7 @@
     function thumb(id){
       return "https://img.youtube.com/vi/" + id + "/hqdefault.jpg";
     }
-    function embed(id){
+    function videoEmbed(id){
       return "https://www.youtube.com/embed/" + id + "?autoplay=1&rel=0";
     }
     function watch(id){
@@ -354,9 +357,9 @@
       });
     }
 
-    function play(idx){
+    function playVideo(idx){
       const v = VIDEOS[idx];
-      player.src = embed(v.id);
+      player.src = videoEmbed(v.id);
       nowLabel.textContent = "Now playing: " + v.label;
       openBtn.href = watch(v.id);
       setActive(idx);
@@ -382,15 +385,18 @@
             <p class="video-title">${v.label}</p>
           </div>
         `;
-        card.addEventListener("click", () => play(idx));
+        card.addEventListener("click", () => playVideo(idx));
         card.addEventListener("keydown", (e) => {
-          if (e.key === "Enter" || e.key === " ") { e.preventDefault(); play(idx); }
+          if (e.key === "Enter" || e.key === " ") { e.preventDefault(); playVideo(idx); }
         });
         rail.appendChild(card);
       });
 
-      // Start with first video
-      play(0);
+      // Start with the playlist in the featured player
+      player.src = PLAYLIST_EMBED;
+      nowLabel.textContent = "Now playing: OpenTEAM In-Depths Playlist";
+      openBtn.href = PLAYLIST_URL;
+      setActive(0); // highlight first card (optional)
     })();
 
     // Fix scrolling with arrows (independent of any site rail JS)
